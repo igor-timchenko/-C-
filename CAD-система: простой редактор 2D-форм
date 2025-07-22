@@ -1,0 +1,78 @@
+#include <iostream>
+#include <vector>
+#include <memory>
+
+// Базовый класс для геометрических фигур
+class Shape {
+public:
+    virtual void draw() const = 0;
+    virtual void move(double dx, double dy) = 0;
+    virtual ~Shape() = default;
+};
+
+class Circle : public Shape {
+public:
+    Circle(double x, double y, double r) : centerX(x), centerY(y), radius(r) {}
+    
+    void draw() const override {
+        std::cout << "Circle at (" << centerX << ", " << centerY 
+                  << ") with radius " << radius << "\n";
+    }
+    
+    void move(double dx, double dy) override {
+        centerX += dx;
+        centerY += dy;
+    }
+
+private:
+    double centerX, centerY, radius;
+};
+
+class Rectangle : public Shape {
+public:
+    Rectangle(double x, double y, double w, double h) 
+        : topLeftX(x), topLeftY(y), width(w), height(h) {}
+    
+    void draw() const override {
+        std::cout << "Rectangle at (" << topLeftX << ", " << topLeftY 
+                  << ") " << width << "x" << height << "\n";
+    }
+    
+    void move(double dx, double dy) override {
+        topLeftX += dx;
+        topLeftY += dy;
+    }
+
+private:
+    double topLeftX, topLeftY, width, height;
+};
+
+class CADSystem {
+public:
+    void addShape(std::unique_ptr<Shape> shape) {
+        shapes.push_back(std::move(shape));
+    }
+    
+    void renderAll() const {
+        std::cout << "\n--- CAD Drawing ---\n";
+        for (const auto& shape : shapes) {
+            shape->draw();
+        }
+    }
+
+private:
+    std::vector<std::unique_ptr<Shape>> shapes;
+};
+
+int main() {
+    CADSystem cad;
+    
+    // Создаем фигуры
+    cad.addShape(std::make_unique<Circle>(10, 20, 5));
+    cad.addShape(std::make_unique<Rectangle>(30, 40, 100, 50));
+    
+    // Отображаем сцену
+    cad.renderAll();
+    
+    return 0;
+}
