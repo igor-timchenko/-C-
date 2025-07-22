@@ -1,0 +1,39 @@
+#include <iostream>
+#include <windows.h>
+#include <mmsystem.h>
+#pragma comment(lib, "winmm.lib")
+
+class AudioPlayer {
+public:
+    bool play(const std::wstring& filename) {
+        // Проверка существования файла
+        DWORD attr = GetFileAttributes(filename.c_str());
+        if (attr == INVALID_FILE_ATTRIBUTES) {
+            std::wcerr << L"File not found: " << filename << L"\n";
+            return false;
+        }
+        
+        // Воспроизведение файла
+        if (PlaySound(filename.c_str(), NULL, SND_FILENAME | SND_ASYNC)) {
+            std::wcout << L"Now playing: " << filename << L"\n";
+            return true;
+        }
+        
+        std::wcerr << L"Playback error: " << GetLastError() << L"\n";
+        return false;
+    }
+};
+
+int main() {
+    AudioPlayer player;
+    
+    // Проигрывание аудиофайла
+    const std::wstring filename = L"sample.wav";
+    if (player.play(filename)) {
+        std::cout << "Press Enter to stop...";
+        std::cin.get();
+        PlaySound(NULL, 0, 0); // Остановка воспроизведения
+    }
+    
+    return 0;
+}
