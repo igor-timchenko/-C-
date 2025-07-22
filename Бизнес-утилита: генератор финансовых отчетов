@@ -1,0 +1,57 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <iomanip>
+
+class FinancialReport {
+public:
+    void addTransaction(const std::string& date, double amount, const std::string& description) {
+        transactions.push_back({date, amount, description});
+    }
+
+    void generateReport(const std::string& filename) {
+        std::ofstream file(filename);
+        double total = 0;
+
+        file << "Financial Report\n";
+        file << "================================\n";
+        file << std::left << std::setw(12) << "Date" 
+             << std::setw(10) << "Amount" 
+             << "Description\n";
+        
+        for (const auto& trans : transactions) {
+            file << std::setw(12) << trans.date
+                 << std::setw(10) << trans.amount
+                 << trans.description << "\n";
+            total += trans.amount;
+        }
+
+        file << "================================\n";
+        file << "Total: " << total << "\n";
+        file.close();
+    }
+
+private:
+    struct Transaction {
+        std::string date;
+        double amount;
+        std::string description;
+    };
+    
+    std::vector<Transaction> transactions;
+};
+
+int main() {
+    FinancialReport report;
+    
+    // Добавляем транзакции
+    report.addTransaction("2023-10-01", 1500.0, "Client payment");
+    report.addTransaction("2023-10-05", -350.5, "Office supplies");
+    report.addTransaction("2023-10-10", -200.0, "Server maintenance");
+    
+    // Генерируем отчет
+    report.generateReport("financial_report.txt");
+    std::cout << "Report generated successfully!" << std::endl;
+    
+    return 0;
+}
